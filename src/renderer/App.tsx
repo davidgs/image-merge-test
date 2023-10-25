@@ -6,35 +6,39 @@ import scan from '../../assets/images/SVG/Asset2.svg';
 import thrive from '../../assets/images/ThriveCode.png';
 import nfc1 from '../../assets/images/nfc-1.svg';
 import arrow from '../../assets/images/Arrow.svg';
-import NFCIcon from './NFCIcon';
 import './App.css';
 
 function Hello() {
-  const nfci = NFCIcon();
-  console.log(nfci);
   const [size, setSize] = React.useState<number>(30);
+  const [qrsize, setQrSize] = React.useState<number>(200);
   const [scanImage, setScanImage] = React.useState<HTMLCanvasElement>();
   const [arrowImage, setArrowImage] = React.useState<HTMLCanvasElement>();
-  const canvas = document.createElement('canvas');
-  canvas.height = 280;
-  canvas.width = 220;
-  const context = canvas.getContext('2d');
-  if (context) {
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, 220, 280);
-    // context.globalCompositeOperation = 'destination-over';
-    context.globalCompositeOperation = 'source-over';
-    context.lineWidth = 1;
-    context.strokeStyle = '#000000';
-    context.strokeRect(2, 2, canvas.width - 3, canvas.height - 3);
-  }
+  const [canvasArea, setCanvasArea] = React.useState<HTMLCanvasElement>();
+  const [qrImage, setQRimage] = React.useState<HTMLCanvasElement>();
+
+  const makeCanvas = () => {
+    const canvas = document.createElement('canvas');
+    canvas.height = qrsize + size + 20;
+    canvas.width = qrsize + 20;
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, qrsize + 20, qrsize + 60);
+      // context.globalCompositeOperation = 'destination-over';
+      context.globalCompositeOperation = 'source-over';
+      context.lineWidth = 1;
+      context.strokeStyle = '#000000';
+      context.strokeRect(2, 2, canvas.width - 3, canvas.height - 3);
+    }
+    setCanvasArea(canvas);
+  };
 
   const getArrow = () => {
     const acanvas = document.createElement('canvas');
     acanvas.height = size;
-    acanvas.width = 200;
+    acanvas.width = size; //qrsize + 20;
     const acontext = acanvas.getContext('2d');
-    if(acontext) {
+    if (acontext) {
       acontext.globalCompositeOperation = 'source-over';
       const im = new Image();
       im.src = arrow;
@@ -43,27 +47,23 @@ function Hello() {
       const finalw: number = size / 2;
       const rat: number = imh / imw;
       const finalh: number = finalw * rat;
-      console.log(`imh: ${imh}, imw: ${imw}`);
+      console.log(`arrow imh: ${imh}, imw: ${imw}`);
 
       const cent = finalw / 2;
       const loc = acanvas.height / 2 - finalh / 2;
-      console.log(`center: ${cent}, loc: ${loc}`);
-      acontext.drawImage(im, finalw, loc, finalw, finalh);
+      console.log(`arrow center: ${cent}, loc: ${loc}`);
+      acontext.drawImage(im, finalw - 5, loc, finalw, finalh);
     }
     setArrowImage(acanvas);
   };
 
   const getScan = () => {
     const scanvas = document.createElement('canvas');
-    scanvas.height = size + 6;
+    scanvas.height = size; // + 6;
     console.log(`size: ${size}`);
-    scanvas.width = 200;
+    scanvas.width = size; //qrsize + 10;
     const scontext = scanvas.getContext('2d');
     if (scontext) {
-      // scontext.globalCompositeOperation = 'source-over';
-      // scontext.lineWidth = 2;
-      // scontext.strokeStyle = '#0000FF';
-      // scontext.strokeRect(1, 1, canvas.width - 4, canvas.height - 1);
       scontext.globalCompositeOperation = 'source-over';
       const im = new Image();
       im.src = nfc1;
@@ -82,41 +82,53 @@ function Hello() {
     setScanImage(scanvas);
   };
 
+  const getQR = () => {
+    const canvas2 = document.createElement('canvas');
+    canvas2.height = qrsize;
+    canvas2.width = qrsize;
+    const context2 = canvas2.getContext('2d');
+    if (context2) {
+      const im = new Image();
+      im.src = thrive;
+      context2.drawImage(im, 0, 0, qrsize, qrsize);
+    }
+    setQRimage(canvas2);
+  };
   useEffect(() => {
     getScan();
     getArrow();
+    makeCanvas();
+    getQR();
   }, []);
 
   useEffect(() => {
     getScan();
     getArrow();
-  }, [size]);
-
-  const canvas2 = document.createElement('canvas');
-  canvas2.height = 200;
-  canvas2.width = 200;
-  const context2 = canvas2.getContext('2d');
-  if (context2) {
-    const im = new Image();
-    im.src = thrive;
-    context2.drawImage(im, 0, 0, 200, 200);
-  }
+    makeCanvas();
+    getQR();
+  }, [size, qrsize]);
 
   useEffect(() => {
     mergeImages([
-      { src: canvas.toDataURL(), x: 0, y: 0 },
-      { src: canvas2.toDataURL(), x: 10, y: 10 },
-      arrowImage
-        ? { src: arrowImage?.toDataURL(), x: 5, y: 220 }
+      canvasArea
+        ? { src: canvasArea.toDataURL(), x: 0, y: 0 }
         : { src: '', x: 0, y: 0 },
+      qrImage
+        ? { src: qrImage.toDataURL(), x: 10, y: 10 }
+        : { src: '', x: 0, y: 0 },
+      arrowImage
+        ? { src: arrowImage.toDataURL(), x: 5, y: qrsize + 10 }
+        : { src: '', x: 0, y: 0 },
+      // text-to-image
+      // textImage ? { src: textImage.toDataURL(), x: sixe + 10, y: qrsize + 10 } : { src: '', x: 0, y: 0 },
       scanImage
-        ? { src: scanImage?.toDataURL(), x: 5, y: 220 }
+        ? { src: scanImage.toDataURL(), x: qrsize - size, y: qrsize + 10 }
         : { src: '', x: 0, y: 0 },
     ])
       // eslint-disable-next-line no-return-assign
       .then((b64) => (document.getElementById('mergeMe').src = b64))
       .catch((error) => console.log(error));
-  }, [scanImage, canvas, canvas2]);
+  }, [scanImage, canvasArea, qrImage, arrowImage]);
 
   return (
     <div>
@@ -127,19 +139,19 @@ function Hello() {
         Scan Me
       </h1>
       <p />
-      <img id="logo" width="200" alt="icon" src={thrive} />
+      <img id="logo" width={qrsize} alt="icon" src={thrive} />
+      <p />
+      <input
+        type="range"
+        min={100}
+        max={500}
+        value={qrsize}
+        onChange={(e) => setQrSize(Number(e.target.value))}
+      />
       <p />
       <img id="mergeMe" alt="icon" />
       <p />
       <div />
-      <img src={nfc1} alt="nfc" />
-      <p />
-      <h2>done!</h2>
-      {/* <div style={{ border: '1px solid black' }}>
-        <SvgResizer size={size}>
-          <NFCIcon />
-      </SvgResizer>
-      </div> */}
       <p />
       <input
         type="range"
@@ -147,6 +159,12 @@ function Hello() {
         value={size}
         onChange={(e) => setSize(Number(e.target.value))}
       />
+      <p />
+      ...
+      <p />
+      <div>
+        <p>FOO</p>
+      </div>
     </div>
   );
 }
