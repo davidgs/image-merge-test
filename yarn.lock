@@ -2078,6 +2078,13 @@
   resolved "https://registry.yarnpkg.com/@mdn/browser-compat-data/-/browser-compat-data-5.3.25.tgz#fe310bdb448fa4b39e7be155d225888887964af1"
   integrity sha512-dzZ7Ot5SoiSrqzNR4+YqRrjRxm1K+0XEuTfIdRuUfGrAJp9EMmocLq7pXIJ4aXiX3T5+GZiXmylJzwWsTVYxWQ==
 
+"@naari3/text-to-svg@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@naari3/text-to-svg/-/text-to-svg-3.3.1.tgz#56559cf8a868cdc420c590b2066cc4f134d7c1cc"
+  integrity sha512-APdxOfO3qZl7aQU7NoKfsnnJ4wMSQenq+QXqu8jze5+souZlIJ92cY9XHjAz8krh7m/7VTYaD3h8eALxvM8nzw==
+  dependencies:
+    opentype.js "0.11.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2667,6 +2674,11 @@
   version "18.18.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.6.tgz#26da694f75cdb057750f49d099da5e3f3824cb3e"
   integrity sha512-wf3Vz+jCmOQ2HV1YUJuCWdL64adYxumkrxtc+H1VUQlnQI04+5HtH+qZCOE21lBE7gIrt+CwX2Wv8Acrw5Ak6w==
+
+"@types/opentype@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@types/opentype/-/opentype-0.0.4.tgz#69d2658ab9bc87a88088d11e578bd95284c9c9d4"
+  integrity sha512-O/ROlBSXPLm3bxWwqrFtOmeulWv1jaSsqXYFZA6mWEnJLQ6/lgQDEiuZFRoqIKetFaNrovj+N3NyWPthLTYk0w==
 
 "@types/plist@^3.0.1":
   version "3.0.4"
@@ -4149,7 +4161,7 @@ commander@^10.0.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.1.tgz#881ee46b4f77d1c1dccc5823433aa39b022cbe06"
   integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
 
-commander@^2.11.0, commander@^2.20.0:
+commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -8376,6 +8388,11 @@ opentype.js@0.11.0:
     string.prototype.codepointat "^0.2.1"
     tiny-inflate "^1.0.2"
 
+opentype@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/opentype/-/opentype-0.1.2.tgz#d08d44c7dc3737298301d67f5d97c10f42c0a679"
+  integrity sha512-2g3eFdKrX1i5XXR//Pc+XDtLw0eDKDjgddphJL5gV3yvCHY1BnCGDczyNFjL5JL5nCYd+RN7197slzkTQcVEtw==
+
 optionator@^0.9.3:
   version "0.9.3"
   resolved "https://registry.yarnpkg.com/optionator/-/optionator-0.9.3.tgz#007397d44ed1872fdc6ed31360190f81814e2c64"
@@ -10227,14 +10244,6 @@ text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
-
-text-to-svg@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/text-to-svg/-/text-to-svg-3.1.5.tgz#493913d70eae1b12240b309547d64d787ec11e57"
-  integrity sha512-mbeGhMz9MAFaGaZGE8n4Mh/iQV/UkVnYJXhXFrv0eWkcNTgflhpHR2a8nr2ci3NU4FekIHJYKh0N0qdc6yUpfA==
-  dependencies:
-    commander "^2.11.0"
-    opentype.js "0.11.0"
 
 thunky@^1.0.2:
   version "1.1.0"

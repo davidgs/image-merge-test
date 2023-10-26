@@ -9,11 +9,21 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  IpcMainInvokeEvent,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { loadSync, Font } from 'opentype.js';
+import * as opentype from 'opentype.js';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import Avocado from '../../assets/fonts/AvocadoCreamy.ttf';
+import { on } from 'events';
 
 class AppUpdater {
   constructor() {
@@ -55,6 +65,11 @@ const installExtensions = async () => {
     )
     .catch(console.log);
 };
+
+ipcMain.handle('get-font', (event: IpcMainInvokeEvent, font: string) => {
+  
+  return null; //loadSync(`../../assets/fonts/AvocadoCreamy.ttf`);
+});
 
 const createWindow = async () => {
   if (isDebug) {

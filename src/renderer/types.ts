@@ -41,7 +41,7 @@ export interface IProps {
   logoPadding: number;
   logoPaddingStyle: 'square' | 'circle' | undefined;
   eyeRadius: [CornerRadii, CornerRadii, CornerRadii];
-  eyeColor: EyeColor ;
+  eyeColor: EyeColor;
   qrStyle: 'squares' | 'dots';
   style: object;
   id: string;
@@ -51,8 +51,7 @@ declare type InnerOuterEyeColor = {
   inner: string;
   outer: string;
 };
-declare type CornerRadii = [number, number, number, number]
-
+declare type CornerRadii = [number, number, number, number];
 
 export type UtmKeyValue = {
   key: string;
@@ -349,8 +348,8 @@ export const DefaultQRStyle: IProps = {
   ],
   logoPadding: 0,
   logoPaddingStyle: 'square',
-  style: {height: '100%', width: '100%'},
-  id: ""
+  style: { height: '100%', width: '100%' },
+  id: '',
 };
 
 export const defaultQRSettings: QRSettings = {
