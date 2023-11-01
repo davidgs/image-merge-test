@@ -29,7 +29,7 @@ export type Events = 'get-font';
 export type electronAPI = {
   // getQRConfig: () => Promise<string>;
   // saveQRConfig: (params: string) => Promise<string>;
-  getFont: (font: string) => Promise<Font>;
+  getFont: () => Promise<any>;
 };
 
 const electronHandler = {
@@ -52,8 +52,8 @@ contextBridge.exposeInMainWorld('electron', electronHandler);
 export type ElectronHandler = typeof electronHandler;
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getFont: (font: string) => {
-    return ipcRenderer.invoke('get-font', font);
+  getFont: () => {
+    return ipcRenderer.invoke('get-font');
   },
 });
 
@@ -62,7 +62,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 declare global {
   interface Window {
     electronAPI: {
-      getFont: (font: string) => Promise<Font>;
+      getFont: () => Promise<any>;
     };
   }
 }

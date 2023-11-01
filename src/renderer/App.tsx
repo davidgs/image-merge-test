@@ -21,6 +21,34 @@ function Hello() {
   const [txtColor, settxtColor] = React.useState<string>('black');
   const [borderColor, setBorderColor] = React.useState<string>('black');
   const [borderWidth, setBorderWidth] = React.useState<number>(1);
+  const [fonts, setFonts] = React.useState<string[]>();
+  const [font, setFont] = React.useState<string>('Arial');
+
+  useEffect(() => {
+    window.electronAPI
+      .getFont()
+      .then((response) => {
+        console.log(response);
+        setFonts(response);
+        // setMainConfig(JSON.parse(response));
+        return '';
+      })
+      .catch((error: unknown) => {
+        console.log(`Error: ${error}`);
+      });
+  }, []);
+
+  useEffect(() => {
+    fonts?.map((font) => {
+      const newOption = document.createElement('option');
+      newOption.value = font;
+      newOption.innerText = font;
+      newOption.style.fontFamily = font;
+      const select = document.getElementById('fontSelect');
+      select?.appendChild(newOption);
+      return '';
+    });
+  }, [fonts]);
 
   const nfcSVG = `<svg
       id="scanIcon"
@@ -170,7 +198,7 @@ function Hello() {
     canvas.style.backgroundColor = backColor;
     const context = canvas.getContext('2d');
     if (context) {
-      context.font = `${size / 2}px Bradley Hand, cursive`;
+      context.font = `${size / 2}px ${font}`;
       const finalw: number = size / 2;
       const loc = canvas.height / 2;
       context.fillStyle = txtColor;
@@ -261,6 +289,7 @@ function Hello() {
     txtColor,
     borderColor,
     borderWidth,
+    font,
   ]);
 
   useEffect(() => {
@@ -295,46 +324,21 @@ function Hello() {
 
     if (imgList.length > 0) {
       mergeImages(imgList)
-        .then((b64) => setMergeIm(b64))
+        // eslint-disable-next-line promise/always-return
+        .then((b64) => {
+          setMergeIm(b64);
+          const mergeMe = document.getElementById('mergedImage');
+          const mm = mergeMe?.childNodes[0];
+          // eslint-disable-next-line promise/always-return
+          if (mm) mergeMe?.removeChild(mm);
+          const img = document.createElement('img');
+          img.id = 'mergeMe';
+          img.src = b64;
+          // eslint-disable-next-line promise/always-return
+          mergeMe?.appendChild(img);
+        })
         .catch((error) => console.log(error));
     }
-    // document.getElementById('mergeMe').src = b64))
-    mergeImages([
-      mainCanvas
-        ? { src: mainCanvas.toDataURL(), x: 0, y: 0 }
-        : { src: '', x: 0, y: 0 },
-      qrCanvas
-        ? { src: qrCanvas.toDataURL(), x: 10, y: 10 }
-        : { src: '', x: 0, y: 0 },
-      arrowCanvas && showArrow
-        ? { src: arrowCanvas.toDataURL(), x: 5, y: qrsize + 15 }
-        : { src: '', x: 0, y: 0 },
-      // text-to-image
-      textCanvas
-        ? {
-            src: textCanvas.toDataURL(),
-            x: size + 10,
-            y: qrsize + textCanvas.height / 2.5,
-          }
-        : { src: '', x: 0, y: 0 },
-      scanCanvas
-        ? { src: scanCanvas.toDataURL(), x: qrsize - size, y: qrsize + 15 }
-        : { src: '', x: 0, y: 0 },
-    ])
-      // eslint-disable-next-line no-return-assign
-      .then((b64) => {
-        const mergeMe = document.getElementById('mergedImage');
-        const mm = mergeMe?.childNodes[0];
-        // eslint-disable-next-line promise/always-return
-        if (mm) mergeMe?.removeChild(mm);
-        const img = document.createElement('img');
-        img.id = 'mergeMe';
-        img.src = b64;
-        // eslint-disable-next-line promise/always-return
-        mergeMe?.appendChild(img);
-        // eslint-disable-next-line promise/always-return
-      })
-      .catch((error) => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     scanCanvas,
@@ -348,15 +352,30 @@ function Hello() {
 
   return (
     <div>
-      <h1
-        id="headText"
-        style={{ fontFamily: 'Bradley Hand, cursive', color: 'black' }}
-      >
+      <h1 id="headText" style={{ fontFamily: font, color: txtColor }}>
         Scan Me
       </h1>
+      <p />
+      <label htmlFor="fontSelect" style={{ color: txtColor }}>
+        <span style={{ fontFamily: font, color: txtColor }}>
+          {' '}
+          Font: &nbsp;{' '}
+        </span>{' '}
+      </label>
+      <select
+        id="fontSelect"
+        name="fontSelect"
+        onChange={(e) => {
+          const v = e.target.value;
+          console.log(`fontSelect: ${v}`);
+          setFont(v);
+        }}
+      />
+      <p />
       {/* <p />
       <img id="logo" width={qrsize} alt="icon" src={thrive} />
       <p /> */}
+      <label style={{ color: 'black' }}>QR Code Size: &nbsp;</label>
       <input
         type="range"
         min={100}
@@ -365,7 +384,7 @@ function Hello() {
         value={qrsize}
         onChange={(e) => setQrSize(Number(e.target.value))}
       />
-      <h4 style={{ color: 'black' }}>QR Code Size: {qrsize}</h4>
+      <p style={{ color: 'black' }}>size: {qrsize}</p>
       <p />
       <select
         id="backColor"
@@ -411,7 +430,6 @@ function Hello() {
       </div>
       <p />
       <div />
-      {/* <img id="mergeMe" alt="icon" src={textCanvas} /> */}
       <p />
       <input
         type="range"

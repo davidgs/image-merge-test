@@ -18,12 +18,10 @@ import {
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { loadSync, Font } from 'opentype.js';
-import * as opentype from 'opentype.js';
+import SystemFonts from 'dnm-font-manager';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import Avocado from '../../assets/fonts/AvocadoCreamy.ttf';
-import { on } from 'events';
 
 class AppUpdater {
   constructor() {
@@ -32,6 +30,12 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+const systemFonts = new SystemFonts();
+  // useEffect(() => {
+    //
+  //   setFonts(fontList);
+  //   console.log(fontList);
+  // }, []);
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -66,9 +70,9 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-ipcMain.handle('get-font', (event: IpcMainInvokeEvent, font: string) => {
-  
-  return null; //loadSync(`../../assets/fonts/AvocadoCreamy.ttf`);
+ipcMain.handle('get-font', (event: IpcMainInvokeEvent) => {
+  const fontList = systemFonts.getFontsSync();
+  return fontList;
 });
 
 const createWindow = async () => {
