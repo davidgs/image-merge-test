@@ -21,7 +21,6 @@
  * SOFTWARE.
  */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { Font } from 'opentype.js';
 
 export type Channels = ['message', 'editMainJSON', 'editUTMJSON'];
 export type Events = 'get-font';
@@ -45,7 +44,7 @@ const electronHandler = {
         ipcRenderer.removeListener(channel, subscription);
       };
     },
-  }
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

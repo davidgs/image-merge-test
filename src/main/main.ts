@@ -9,13 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-  IpcMainInvokeEvent,
-} from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import SystemFonts from 'dnm-font-manager';
@@ -31,11 +25,11 @@ class AppUpdater {
   }
 }
 const systemFonts = new SystemFonts();
-  // useEffect(() => {
-    //
-  //   setFonts(fontList);
-  //   console.log(fontList);
-  // }, []);
+// useEffect(() => {
+//
+//   setFonts(fontList);
+//   console.log(fontList);
+// }, []);
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -70,7 +64,7 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-ipcMain.handle('get-font', (event: IpcMainInvokeEvent) => {
+ipcMain.handle('get-font', () => {
   const fontList = systemFonts.getFontsSync();
   return fontList;
 });

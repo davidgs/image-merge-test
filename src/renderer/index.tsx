@@ -6,4 +6,3 @@ const root = createRoot(container);
 root.render(<App />);
 
 // calling IPC exposed from preload script
-

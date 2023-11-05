@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import mergeImages from 'merge-images';
 import svgToMiniDataURI from 'mini-svg-data-uri';
@@ -8,49 +8,62 @@ import './App.css';
 function Hello() {
   const [size, setSize] = React.useState<number>(30);
   const [qrsize, setQrSize] = React.useState<number>(200);
-  const [scanCanvas, setScanCanvas] =
-    React.useState<HTMLCanvasElement | null>();
-  const [arrowCanvas, setArrowCanvas] = React.useState<HTMLCanvasElement>();
-  const [textCanvas, setTextCanvas] = React.useState<HTMLCanvasElement>();
-  const [mainCanvas, setMainCanvas] = React.useState<HTMLCanvasElement>();
-  const [qrCanvas, setQrCanvas] = React.useState<HTMLCanvasElement>();
   const [showArrow, setShowArrow] = React.useState<boolean>(true);
-  const [showNFC, setShowNFC] = React.useState<boolean>(true);
+  const [showIcon, setShowIcon] = React.useState<boolean>(true);
   const [backColor, setBackColor] = React.useState<string>('white');
-  const [mergeIm, setMergeIm] = React.useState<string>('');
+  // const [mergeIm, setMergeIm] = React.useState<string>('');
   const [txtColor, settxtColor] = React.useState<string>('black');
   const [borderColor, setBorderColor] = React.useState<string>('black');
   const [borderWidth, setBorderWidth] = React.useState<number>(1);
   const [fonts, setFonts] = React.useState<string[]>();
   const [font, setFont] = React.useState<string>('Arial');
+  const [mergeText, setMergeText] = React.useState<string>('Scan Me!');
 
+  /*
+   * get the list of system fonts from the main process
+   */
   useEffect(() => {
     window.electronAPI
       .getFont()
       .then((response) => {
-        console.log(response);
         setFonts(response);
-        // setMainConfig(JSON.parse(response));
         return '';
       })
       .catch((error: unknown) => {
+        // eslint-disable-next-line no-console
         console.log(`Error: ${error}`);
       });
   }, []);
 
-  useEffect(() => {
-    fonts?.map((font) => {
-      const newOption = document.createElement('option');
-      newOption.value = font;
-      newOption.innerText = font;
-      newOption.style.fontFamily = font;
-      const select = document.getElementById('fontSelect');
-      select?.appendChild(newOption);
-      return '';
-    });
+  /*
+   * keep font menu options up to date
+   */
+  const fontMenuOptions = useMemo(() => {
+    return fonts?.map((x) =>
+      !x.startsWith('.') ? <option key={`font-${x}`}>{x}</option> : '',
+    );
   }, [fonts]);
 
-  const nfcSVG = `<svg
+  /*
+   * build the svg for qrcode
+   */
+  const qrSVG: string = `
+    <svg
+      id="qrIcon"
+      xmlns="http://www.w3.org/2000/svg"
+      width="170"
+      height="170"
+      viewBox="0 0 1006 1004.02"
+    >
+    <g id="Capa_1"><circle fill="${txtColor}" cx="417.69" cy="427.53" r="11"/><path fill="${txtColor}" d="m705.95,527.04c-6.07,0-11-4.93-11-11s4.93-11,11-11,11,4.94,11,11-4.93,11-11,11Z"/><path fill="${txtColor}" d="m11.04,232.45c-6.09,0-11.04-4.95-11.04-11.04V11.04C0,4.95,4.95,0,11.04,0h210.37c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04H22.08v199.33c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m104.57,253.46c-6.09,0-11.04-4.95-11.04-11.04V100.93c0-6.09,4.95-11.04,11.04-11.04h141.49c6.09,0,11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04H104.57Zm11.04-22.08h119.41v-119.41h-119.41v119.41Z"/><path fill="${txtColor}" d="m104.57,914.13c-6.09,0-11.04-4.95-11.04-11.04v-141.49c0-6.09,4.95-11.04,11.04-11.04h141.49c6.09,0,11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04H104.57Zm11.04-22.08h119.41v-119.41h-119.41v119.41Z"/><path fill="${txtColor}" d="m321.32,707.41c-6.09,0-11.04-4.95-11.04-11.04v-96.31c0-6.09,4.95-11.04,11.04-11.04h96.31c6.09,0,11.04,4.95,11.04,11.04v96.31c0,6.09-4.95,11.04-11.04,11.04h-96.31Zm11.04-22.08h74.23v-74.23h-74.23v74.23Z"/><path fill="${txtColor}" d="m406.69,269.11c-6.09,0-11.04-4.95-11.04-11.04v-96.31c0-6.09,4.95-11.04,11.04-11.04h96.31c6.09,0,11.04,4.95,11.04,11.04v96.31c0,6.09-4.95,11.04-11.04,11.04h-96.31Zm11.04-22.08h74.23v-74.23h-74.23v74.23Z"/><path fill="${txtColor}" d="m759.94,914.13c-6.09,0-11.04-4.95-11.04-11.04v-141.49c0-6.09,4.95-11.04,11.04-11.04h141.49c6.09,0,11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04h-141.49Zm11.04-22.08h119.41v-119.41h-119.41v119.41Z"/><path fill="${txtColor}" d="m759.94,253.45c-6.09,0-11.04-4.95-11.04-11.04V100.93c0-6.09,4.95-11.04,11.04-11.04h141.49c6.09,0,11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04h-141.49Zm11.04-22.08h119.41v-119.41h-119.41v119.41Z"/><path fill="${txtColor}" d="m994.96,232.45c-6.09,0-11.04-4.95-11.04-11.04V22.08h-199.33c-6.09,0-11.04-4.95-11.04-11.04S778.5,0,784.59,0h210.37c6.09,0,11.04,4.95,11.04,11.04v210.37c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m784.59,1004.02c-6.09,0-11.04-4.95-11.04-11.04s4.95-11.04,11.04-11.04h199.33v-199.33c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v210.37c0,6.09-4.95,11.04-11.04,11.04h-210.37Z"/><path fill="${txtColor}" d="m11.04,1004.02c-6.09,0-11.04-4.95-11.04-11.04v-210.37c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v199.33h199.33c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04H11.04Z"/><path fill="${txtColor}" d="m321.32,914.13c-6.09,0-11.04-4.95-11.04-11.04s4.95-11.04,11.04-11.04h259.48v-219.71c0-6.09,4.95-11.04,11.04-11.04h309.59c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-298.55v219.71c0,6.09-4.95,11.04-11.04,11.04h-270.52Z"/><path fill="${txtColor}" d="m591.84,344.05c-6.09,0-11.04-4.95-11.04-11.04V100.93c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v221.05h298.55c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-309.59Z"/><path fill="${txtColor}" d="m591.84,608.24c-6.09,0-11.04-4.95-11.04-11.04v-81.16c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v70.12h287.51v-158.63c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v169.67c0,6.09-4.95,11.04-11.04,11.04h-309.59Z"/><path fill="${txtColor}" d="m507.01,438.57c-6.09,0-11.04-4.95-11.04-11.04s4.95-11.04,11.04-11.04h198.39c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-198.39Z"/><path fill="${txtColor}" d="m678,914.13c-6.09,0-11.04-4.95-11.04-11.04v-141.49c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m104.57,652.66c-6.09,0-11.04-4.95-11.04-11.04s4.95-11.04,11.04-11.04h130.45v-114.54c0-6.09,4.95-11.04,11.04-11.04h256.94c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-245.9v114.54c0,6.09-4.95,11.04-11.04,11.04H104.57Z"/><path fill="${txtColor}" d="m321.32,833.97c-6.09,0-11.04-4.95-11.04-11.04,0-6.09,4.95-11.04,11.04-11.04h182v-115.52c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v126.56c0,6.09-4.95,11.04-11.04,11.04h-193.04Z"/><path fill="${txtColor}" d="m104.57,344.05c-6.09,0-11.04-4.95-11.04-11.04s4.95-11.04,11.04-11.04h141.49c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04H104.57Z"/><path fill="${txtColor}" d="m175.32,589.87c-6.09,0-11.04-4.95-11.04-11.04v-151.3c0-6.09,4.95-11.04,11.04-11.04h152.55c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-141.51v140.26c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m321.32,344.05c-6.09,0-11.04-4.95-11.04-11.04V100.93c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v221.05h170.64c6.09,0,11.04,4.95,11.04,11.04s-4.95,11.04-11.04,11.04h-181.68Z"/><path fill="${txtColor}" d="m675.89,253.45c-6.09,0-11.04-4.95-11.04-11.04V100.93c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v141.49c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m820.28,527.08c-6.09,0-11.04-4.95-11.04-11.04v-88.51c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v88.51c0,6.09-4.95,11.04-11.04,11.04Z"/><path fill="${txtColor}" d="m104.57,589.87c-6.09,0-11.04-4.95-11.04-11.04v-151.3c0-6.09,4.95-11.04,11.04-11.04s11.04,4.95,11.04,11.04v151.3c0,6.09-4.95,11.04-11.04,11.04Z"/><circle fill="${txtColor}" cx="514.36" cy="607.55" r="11"/></g>
+    </svg>`;
+
+  /*
+   * build the svg for the NFC icon
+   */
+  const nfcSVG: string = useMemo(() => {
+    console.log(`useMemo build NFC svg color ${txtColor}`);
+    return `<svg
       id="scanIcon"
       xmlns="http://www.w3.org/2000/svg"
       width="180"
@@ -59,7 +72,7 @@ function Hello() {
     >
       <circle
         strokeWidth=".77px"
-        fill="${backColor}"
+        fill="white"
         stroke="${txtColor}"
         cx="8.21"
         cy="8.21"
@@ -82,7 +95,7 @@ function Hello() {
         d="m9.95,8.29c-.03,1.43-.53,2.77-1.44,3.88-.13.16-.11.41.05.54.16.14.41.11.54-.05,1.02-1.24,1.58-2.74,1.61-4.35.04-1.69-.53-3.35-1.6-4.65-.07-.09-.18-.14-.29-.14-.09,0-.18.03-.25.09-.16.13-.19.38-.05.54.96,1.17,1.46,2.64,1.43,4.15Z"
       />
       <rect
-        fill="${backColor}"
+        fill="white"
         stroke="${txtColor}"
         strokeMiterlimit="10"
         strokeWidth=".7px"
@@ -95,8 +108,15 @@ function Hello() {
         transform="translate(-3.58 15.44) rotate(-49.71)"
       />
     </svg>`;
+  }, [txtColor]);
 
-  const arrowSVG = `
+  /*
+   * build the svg for the arrow icon
+   */
+  const arrowSVG: string = useMemo(() => {
+    const d = new Date();
+    console.log(`useMemo build arrow svg color ${txtColor} (${d.getTime()})`);
+    return `
     <svg
       id="arrowIcon"
       xmlns="http://www.w3.org/2000/svg"
@@ -189,12 +209,12 @@ function Hello() {
         <polygon fill="${txtColor}" points="0 18.39 23.59 0 27.73 29.63 0 18.39"/>
       </g>
     </svg>`;
+  }, [txtColor]);
 
-  const makeTextCanvas = () => {
-    const text = document?.getElementById('headText')?.innerHTML ?? 'Scan Me';
+  const txtImage = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = qrsize;
-    canvas.height = size;
+    canvas.height = size + 15;
     canvas.style.backgroundColor = backColor;
     const context = canvas.getContext('2d');
     if (context) {
@@ -202,14 +222,38 @@ function Hello() {
       const finalw: number = size / 2;
       const loc = canvas.height / 2;
       context.fillStyle = txtColor;
-      context.fillText(text, finalw, loc, qrsize - size);
+      context.fillText(mergeText, finalw, loc, qrsize - size);
     }
-    setTextCanvas(canvas);
-  };
-
-  const makeMainCanvas = () => {
+    return canvas.toDataURL();
+  }, [size, qrsize, backColor, txtColor, font, mergeText]);
+  /*
+   * keep the text canvas up to date
+   */
+  const textImgUrl: string = useMemo(() => {
+    // console.log('useMemo textCanvas');
     const canvas = document.createElement('canvas');
-    canvas.height = qrsize + size + 20;
+    canvas.width = qrsize / 2;
+    canvas.height = size + 15;
+    canvas.style.backgroundColor = backColor;
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.font = `${size}px ${font}`;
+      const finalw: number = size;
+      const loc = canvas.height / 1.7;
+      context.fillStyle = txtColor;
+      context.fillText(mergeText, finalw, loc, qrsize - size);
+    }
+    return canvas.toDataURL();
+  }, [size, qrsize, backColor, txtColor, font, mergeText]);
+
+
+  /*
+   * keep the main canvas up to date
+   */
+  const mainCanvas: HTMLCanvasElement = useMemo(() => {
+    // console.log('useMemo mainCanvas');
+    const canvas = document.createElement('canvas');
+    canvas.height = qrsize + size + 40;
     canvas.width = qrsize + 20;
     const context = canvas.getContext('2d');
     if (context) {
@@ -222,77 +266,93 @@ function Hello() {
       // context.stroke
       context.strokeRect(2, 2, canvas.width - 3, canvas.height - 3);
     }
-    setMainCanvas(canvas);
-  };
+    return canvas;
+  }, [qrsize, size, backColor, borderColor, borderWidth]);
 
-  const makeArrowCanvas = () => {
+  const arrowImgURL = useMemo(() => {
+    // console.log('useMemo arrowImgURL');
+    return svgToMiniDataURI(arrowSVG);
+  }, [arrowSVG]);
+  /*
+   * Keep the arrow canvas up to date
+   */
+  const arrowCanvas: HTMLCanvasElement = useMemo(() => {
+    const d = new Date();
+    console.log(`useMemo arrowCanvas ${d.getTime()}`);
     const canvas2 = document.createElement('canvas');
-    canvas2.height = size;
+    canvas2.height = size + 15;
     canvas2.width = size;
     const context2 = canvas2.getContext('2d');
     if (context2) {
       const im = new Image();
       im.src = svgToMiniDataURI(arrowSVG);
-      context2.drawImage(im, 0, 0, size, size);
+      context2.drawImage(im, 0, 10, size, size);
     }
-    setArrowCanvas(canvas2);
-  };
+    return canvas2;
+  }, [size, arrowSVG]);
 
-  const makeScanCanvas = () => {
-    const canvas2 = document.createElement('canvas');
-    canvas2.height = size;
-    canvas2.width = size;
-    const context2 = canvas2.getContext('2d');
-    if (context2) {
-      const im = new Image();
-      im.src = svgToMiniDataURI(nfcSVG);
-      context2.drawImage(im, 0, 0, size, size);
+  const qrImgURL = useMemo(() => {
+    console.log('useMemo qrImgURL');
+    return svgToMiniDataURI(qrSVG);
+  }, [qrSVG]);
+
+  const nfcImgURL = useMemo(() => {
+    console.log('useMemo nfcImgURL');
+    return svgToMiniDataURI(nfcSVG);
+  }, [nfcSVG]);
+
+  const [icon, setIcon] = React.useState<string>(nfcImgURL);
+
+  const iconImgURL = useMemo(() => {
+    // useEffect(() => {
+    switch (icon) {
+      case 'nfc':
+        return nfcImgURL;
+      case 'qr':
+        return qrImgURL;
+      default:
+        return nfcImgURL;
     }
-    setScanCanvas(canvas2);
-  };
+  }, [icon, nfcImgURL, qrImgURL]);
 
-  const makeQrCanvas = () => {
-    const canvas2 = document.createElement('canvas');
-    canvas2.height = qrsize;
-    canvas2.width = qrsize;
-    const context2 = canvas2.getContext('2d');
-    if (context2) {
-      const im = new Image();
+  /*
+   * Keep the icon canvas up to date
+   */
+  const iconCanvas: HTMLCanvasElement = useMemo(() => {
+    const d = new Date();
+    console.log(`useMemo iconCanvas ${d.getTime()}`);
+    const canvas: HTMLCanvasElement = document.createElement('canvas');
+    canvas.height = size + 15;
+    canvas.width = size + 4;
+    const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
+    if (context) {
+      const im: HTMLImageElement = new Image();
+      im.src = iconImgURL;
+      context.drawImage(im, 0, 10, size, size);
+    }
+    return canvas;
+  }, [size, iconImgURL]);
+
+  /*
+   * Keep the QR canvas up to date
+   */
+  const qrCanvas: HTMLCanvasElement = useMemo(() => {
+    // console.log('useMemo qrCanvas');
+    const canvas: HTMLCanvasElement = document.createElement('canvas');
+    canvas.height = qrsize;
+    canvas.width = qrsize;
+    const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
+    if (context) {
+      const im: HTMLImageElement = new Image();
       im.src = thrive;
-      context2.drawImage(im, 0, 0, qrsize, qrsize);
+      context.drawImage(im, 2, 2, qrsize, qrsize);
     }
-    setQrCanvas(canvas2);
-  };
+    return canvas;
+  }, [qrsize]);
 
-  useEffect(() => {
-    makeScanCanvas();
-    makeArrowCanvas();
-    makeMainCanvas();
-    makeQrCanvas();
-    makeTextCanvas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    makeScanCanvas();
-    makeArrowCanvas();
-    makeMainCanvas();
-    makeQrCanvas();
-    makeTextCanvas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    size,
-    qrsize,
-    backColor,
-    showArrow,
-    showNFC,
-    txtColor,
-    borderColor,
-    borderWidth,
-    font,
-  ]);
-
-  useEffect(() => {
+  const mergeList: mergeImages.ImageSource[] = useMemo(() => {
+    const d = new Date();
+    console.log(`useMemo mergeList ${d.getTime()}`);
     const imgList = [];
     if (mainCanvas) {
       imgList.push({ src: mainCanvas.toDataURL(), x: 0, y: 0 });
@@ -300,33 +360,43 @@ function Hello() {
     if (qrCanvas) {
       imgList.push({ src: qrCanvas.toDataURL(), x: 10, y: 10 });
     }
-    if (textCanvas) {
+    // if (textCanvas) {
+    //   imgList.push({
+    //     src: textCanvas.toDataURL(),
+    //     x: mainCanvas.width / 2 - size * 2,
+    //     y: qrsize + textCanvas.height / 2.5,
+    //   });
+    // }
+    if (showArrow && arrowCanvas) {
+      imgList.push({ src: arrowCanvas.toDataURL(), x: 5, y: qrsize + 10 });
+    }
+    if (showIcon && iconCanvas) {
       imgList.push({
-        src: textCanvas.toDataURL(),
-        x: mainCanvas?.width / 2 - size * 2,
-        y: qrsize + textCanvas.height / 2.5,
+        src: iconCanvas.toDataURL(),
+        x: qrsize - size,
+        y: qrsize + 10,
       });
     }
-    if (showArrow) {
-      if (arrowCanvas) {
-        imgList.push({ src: arrowCanvas.toDataURL(), x: 5, y: qrsize + 10 });
-      }
-    }
-    if (showNFC) {
-      if (scanCanvas) {
-        imgList.push({
-          src: scanCanvas.toDataURL(),
-          x: qrsize - size,
-          y: qrsize + 10,
-        });
-      }
-    }
+    return imgList;
+  }, [
+    mainCanvas,
+    qrCanvas,
+    // textCanvas,
+    arrowCanvas,
+    iconCanvas,
+    showArrow,
+    showIcon,
+    qrsize,
+    size,
+  ]);
 
-    if (imgList.length > 0) {
-      mergeImages(imgList)
+  const mergedImage: HTMLImageElement = useMemo(() => {
+    // useEffect(() => {
+    // console.log('useEffect mergeList');
+    if (mergeList.length > 0) {
+      mergeImages(mergeList)
         // eslint-disable-next-line promise/always-return
         .then((b64) => {
-          setMergeIm(b64);
           const mergeMe = document.getElementById('mergedImage');
           const mm = mergeMe?.childNodes[0];
           // eslint-disable-next-line promise/always-return
@@ -337,44 +407,47 @@ function Hello() {
           // eslint-disable-next-line promise/always-return
           mergeMe?.appendChild(img);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    scanCanvas,
-    mainCanvas,
-    qrCanvas,
-    arrowCanvas,
-    showArrow,
-    showNFC,
-    textCanvas,
-  ]);
+  }, [mergeList]);
 
   return (
-    <div>
-      <h1 id="headText" style={{ fontFamily: font, color: txtColor }}>
-        Scan Me
-      </h1>
+    <div style={{ overflow: 'scroll' }}>
       <p />
-      <label htmlFor="fontSelect" style={{ color: txtColor }}>
-        <span style={{ fontFamily: font, color: txtColor }}>
-          {' '}
-          Font: &nbsp;{' '}
-        </span>{' '}
+      <h1 style={{ color: 'black' }}>QR Code Generator</h1>
+      <label htmlFor="mergeText" style={{ color: 'black' }}>
+        Add Text: &nbsp;
+        <input
+          type="text"
+          id="mergeText"
+          style={{ fontFamily: font, color: txtColor }}
+          onChange={(e) => {
+            const v = e.target.value;
+            console.log(`mergeText: ${v}`);
+            setMergeText(v);
+          }}
+          value={mergeText}
+        />
       </label>
-      <select
-        id="fontSelect"
-        name="fontSelect"
-        onChange={(e) => {
-          const v = e.target.value;
-          console.log(`fontSelect: ${v}`);
-          setFont(v);
-        }}
-      />
       <p />
-      {/* <p />
-      <img id="logo" width={qrsize} alt="icon" src={thrive} />
-      <p /> */}
+      <label htmlFor="fontSelect" style={{ color: 'black' }}>
+        Font: &nbsp;
+        <select
+          id="fontSelect"
+          name="fontSelect"
+          onChange={(e) => {
+            const v = e.target.value;
+            setFont(v);
+          }}
+        >
+          <option value="">Choose one ...</option>
+          {fontMenuOptions}
+        </select>
+      </label>
+      <p />
       <label style={{ color: 'black' }}>QR Code Size: &nbsp;</label>
       <input
         type="range"
@@ -394,6 +467,7 @@ function Hello() {
           setBackColor(v);
         }}
       >
+        <option value="">Choose one ...</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
         <option value="blue">Blue</option>
@@ -407,9 +481,10 @@ function Hello() {
         name="BorderColor"
         onChange={(e) => {
           const v = e.target.value;
-          setBorderColor(v);
+          setBorderColor(v !== '' ? v : 'black');
         }}
       >
+        <option value="">Choose one ...</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
         <option value="blue">Blue</option>
@@ -426,7 +501,7 @@ function Hello() {
         onChange={(e) => setBorderWidth(Number(e.target.value))}
       />
       <div id="mergedImage">
-        <img src={mergeIm} id="mergeMe" alt="icon" />
+        <img id="mergeMe" alt="icon" />
       </div>
       <p />
       <div />
@@ -456,24 +531,38 @@ function Hello() {
         <input
           id="checkNFC"
           type="checkbox"
-          checked={showNFC}
+          checked={showIcon}
           onChange={(e) => {
             const v = e.target.checked;
-            setShowNFC(v);
+            setShowIcon(v);
           }}
         />
-        &nbsp;Show NFC Symbol
+        &nbsp;Show Icon Symbol
       </label>
       <p />
+      <select
+        id="whichIcon"
+        name="whichIcon"
+        onChange={(e) => {
+          const v = e.target.value;
+          console.log(`whichIcon: ${v}`);
+          setIcon(v);
+        }}
+      >
+        <option value="">Choose one ...</option>
+        <option value="nfc">NFC</option>
+        <option value="qr">QR Code</option>
+      </select>
       <select
         id="txtColor"
         name="txtColor"
         onChange={(e) => {
           const v = e.target.value;
           console.log(`txtColor: ${v}`);
-          settxtColor(v);
+          settxtColor(v !== '' ? v : 'black');
         }}
       >
+        <option value="">Choose one ...</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
         <option value="blue">Blue</option>
@@ -481,7 +570,77 @@ function Hello() {
         <option value="white">White</option>
         <option value="purple">Purple</option>
       </select>
-      <p />
+      {/* <p /> */}
+      {/* <img src={arrowImgURL} alt="arrow" /> */}
+      {/* <p />
+      <img src={iconImgURL} alt="icon" />
+      <p /> */}
+      <div
+        style={{
+          width: qrsize + 20 + borderWidth * 2,
+          height: qrsize + 20 + size + 40 + borderWidth * 2,
+          border: `solid ${borderWidth}px ${borderColor}`,
+          backgroundColor: backColor,
+        }}
+      >
+        <div
+          style={{ width: qrsize, height: qrsize }}
+        >
+          <img
+            alt="qr"
+            src={thrive}
+            style={{
+              marginTop: '10px',
+              marginLeft: '10px',
+              width: qrsize,
+              height: qrsize,
+              backgroundColor: 'white',
+              border: 'solid 1px black',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            width: `${qrsize}`,
+            marginLeft: '10px',
+            marginTop: '10px',
+            display: 'flex',
+            flexDirection: 'row',
+            border: 'solid 1px black',
+          }}
+        >
+          <div
+            style={{
+              minWidth: '20%',
+              display: 'flex',
+              flexDirection: 'column',
+              marginTop: '10px',
+              border: 'solid 1px black',
+            }}
+          >
+            <img
+              alt="arrow"
+              src={arrowImgURL}
+              style={{ width: size, height: size }}
+            />
+          </div>
+          <div
+            style={{
+              minWidth: '80%',
+              display: 'flex',
+              flexDirection: 'column',
+              marginTop: '10px',
+              border: 'solid 1px black',
+            }}
+          >
+            <img
+              alt={`${icon}`}
+              src={textImgUrl}
+              style={{ width: size * 5, height: size, alignItems: 'left' }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
