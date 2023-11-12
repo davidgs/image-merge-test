@@ -1,22 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import svgToMiniDataURI from 'mini-svg-data-uri';
 
-export default function NFCIcon({
-  id,
-  fill,
-  stroke,
-}: {
-  id: string;
-  fill: string;
-  stroke: string;
-}) {
+export default function NFCIcon(
+  fill: string,
+  stroke: string,
+  size: number,
+): HTMLCanvasElement {
   // const ref = useRef();
-  const [myImage, setMyImage] = useState<HTMLImageElement>();
-  const [myCanvas, setMyCanvas] = useState<HTMLCanvasElement>();
-  const [myContext, setMyContext] = useState<CanvasRenderingContext2D>();
-  const svg = useMemo(
-    () =>
-      `<svg
-      id="${id}"
+  const svg: string = `<svg
+      id="nfc-svg-icon"
       xmlns="http://www.w3.org/2000/svg"
       width="180"
       height="170"
@@ -59,29 +50,19 @@ export default function NFCIcon({
         ry=".3"
         transform="translate(-3.58 15.44) rotate(-49.71)"
       />
-    </svg>`,
-    [fill, stroke, id],
-  );
+    </svg>`;
 
-  useEffect(() => {
-    const image = new Image();
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    setMyImage(image);
-    setMyCanvas(canvas);
-    if (context) {
-      setMyContext(context);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (myImage && myCanvas && myContext) {
-      myImage.src = `data:image/svg+xml;base64,${window.btoa(svg)}`;
-      myImage.onload = () => {
-        myContext.drawImage(myImage, 0, 0);
-      };
-    }
-  }, [myCanvas, myContext, myImage, svg]);
-
-  // return <myCanvas as canvas ref={ref} width="200" height="200" />;
+  /*
+   * Keep the icon canvas up to date
+   */
+  const canvas: HTMLCanvasElement = document.createElement('canvas');
+  const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
+  if (context) {
+    const im: HTMLImageElement = new Image();
+    canvas.height = size + 15;
+    canvas.width = size + 4;
+    im.src = svgToMiniDataURI(svg);
+    context.drawImage(im, 0, 10, size, size);
+  }
+  return canvas;
 }
