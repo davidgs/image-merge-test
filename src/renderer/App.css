@@ -11,6 +11,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: scroll;
+  margin-top: 20px;
+  height: 100%;
 }
 
 button {

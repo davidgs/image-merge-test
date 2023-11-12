@@ -12,6 +12,8 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import SystemFonts from 'dnm-font-manager';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -22,6 +24,12 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+const systemFonts = new SystemFonts();
+// useEffect(() => {
+//
+//   setFonts(fontList);
+//   console.log(fontList);
+// }, []);
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -55,6 +63,11 @@ const installExtensions = async () => {
     )
     .catch(console.log);
 };
+
+ipcMain.handle('get-font', () => {
+  const fontList = systemFonts.getFontsSync();
+  return fontList;
+});
 
 const createWindow = async () => {
   if (isDebug) {
