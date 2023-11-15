@@ -7,7 +7,7 @@
  * @param mergeText text to be merged
  * @returns base64 string of canvas
  */
-export default function txtAsImage(
+export default function TxtAsImage(
   backColor: string,
   txtColor: string,
   size: number,

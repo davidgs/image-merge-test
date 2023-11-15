@@ -6,7 +6,7 @@ import Arrow from './Arrow';
 import './App.css';
 import QRIcon from './qrIcon';
 import NFCIcon from './NFCIcon';
-import txtAsImage from './txtAsImage';
+import txtAsImage from './TxtAsImage';
 
 function Hello() {
   const [size, setSize] = React.useState<number>(30);
@@ -113,9 +113,9 @@ function Hello() {
         y: qrsize + txtImg.height / 2.5,
       });
     }
-    if (showArrow) {
-      imgList.push({ src: arrowIcon.toDataURL(), x: 5, y: qrsize + 10 });
-    }
+    // if (showArrow) {
+    //   imgList.push({ src: arrowIcon.toDataURL(), x: 5, y: qrsize + 10 });
+    // }
     if (showIcon) {
       if (icon === 'qr') {
         imgList.push({

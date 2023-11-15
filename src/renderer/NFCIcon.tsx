@@ -1,4 +1,5 @@
 import svgToMiniDataURI from 'mini-svg-data-uri';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function NFCIcon(
   fill: string,
@@ -6,7 +7,11 @@ export default function NFCIcon(
   size: number,
 ): HTMLCanvasElement {
   // const ref = useRef();
-  const svg: string = `<svg
+  const [svgEle, setSvgEle] = useState('');
+
+  useEffect(() => {
+  // const svg: string = useMemo(() => {
+    setSvgEle(`<svg
       id="nfc-svg-icon"
       xmlns="http://www.w3.org/2000/svg"
       width="180"
@@ -50,7 +55,8 @@ export default function NFCIcon(
         ry=".3"
         transform="translate(-3.58 15.44) rotate(-49.71)"
       />
-    </svg>`;
+    </svg>`);
+  }, [fill, stroke]);
 
   /*
    * Keep the icon canvas up to date
@@ -61,7 +67,7 @@ export default function NFCIcon(
     const im: HTMLImageElement = new Image();
     canvas.height = size + 15;
     canvas.width = size + 4;
-    im.src = svgToMiniDataURI(svg);
+    im.src = svgToMiniDataURI(svgEle);
     context.drawImage(im, 0, 10, size, size);
   }
   return canvas;
