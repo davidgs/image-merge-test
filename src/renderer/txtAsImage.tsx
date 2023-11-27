@@ -22,7 +22,7 @@ export default function TxtAsImage(
   const context = canvas.getContext('2d');
   if (context) {
     context.font = `${size / 2}px ${font}`;
-    const finalw: number = size / 2;
+    const finalw: number = size / 2 + 20;
     const loc = canvas.height / 2;
     context.fillStyle = txtColor;
     context.fillText(mergeText, finalw, loc, qrsize - size);

@@ -4,9 +4,12 @@ import mergeImages from 'merge-images';
 import thrive from '../../assets/images/ThriveCode.png';
 import Arrow from './Arrow';
 import './App.css';
-import QRIcon from './qrIcon';
+import QRIcon from './QrIcon';
 import NFCIcon from './NFCIcon';
-import txtAsImage from './TxtAsImage';
+import Slider from './Slider';
+import WiFiIcon from './WiFiIcon';
+import WiFiIcon2 from './WiFiIcon2';
+import TxtAsImage from './TxtAsImage';
 
 function Hello() {
   const [size, setSize] = React.useState<number>(30);
@@ -51,7 +54,20 @@ function Hello() {
   const nfcIcon: HTMLCanvasElement = NFCIcon(backColor, txtColor, size);
   const qrIcon: HTMLCanvasElement = QRIcon(txtColor, size);
   const arrowIcon: HTMLCanvasElement = Arrow(txtColor, size);
-  const txtImg: HTMLCanvasElement = txtAsImage(
+  const wifiIcon: HTMLCanvasElement = WiFiIcon(txtColor, size);
+  const wifi2Icon: HTMLCanvasElement = WiFiIcon2(txtColor, size);
+
+  /*
+   * Canvas for the display text, converted to an image
+   * @param backColor background color of canvas
+   * @param txtColor text color of canvas
+   * @param size size of text
+   * @param qrsize size of qr code
+   * @param font font of text
+   * @param mergeText text to be merged
+   * @returns base64 string of canvas
+   */
+  const txtImg: HTMLCanvasElement = TxtAsImage(
     backColor,
     txtColor,
     size,
@@ -62,6 +78,8 @@ function Hello() {
 
   /*
    * keep the main canvas up to date
+   * the main canvas is the background for the merged image
+   * @returns HTMLCanvasElement
    */
   const mainCanvas: HTMLCanvasElement = useMemo(() => {
     const canvas = document.createElement('canvas');
@@ -81,6 +99,7 @@ function Hello() {
 
   /*
    * Keep the QR canvas up to date
+   * @returns HTMLCanvasElement with the QR Code in it
    */
   const qrCanvas: HTMLCanvasElement = useMemo(() => {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -98,30 +117,41 @@ function Hello() {
   /*
    * Keep the merged canvas up to date
    */
+  // const [mergeList, setMergeList] = React.useState<mergeImages.ImageSource[]>(
+  //   [],
+  // );
   const mergeList: mergeImages.ImageSource[] = useMemo(() => {
+  // useEffect(() => {
     const imgList = [];
     if (mainCanvas) {
-      imgList.push({ src: mainCanvas.toDataURL(), x: 0, y: 0 });
+      imgList.push({ src: mainCanvas.toDataURL(), x: 0, y: 0, name: 'main' });
     }
     if (qrCanvas) {
-      imgList.push({ src: qrCanvas.toDataURL(), x: 10, y: 10 });
+      imgList.push({ src: qrCanvas.toDataURL(), x: 10, y: 10, name: 'qr' });
     }
     if (txtImg) {
       imgList.push({
         src: txtImg.toDataURL(),
         x: mainCanvas.width / 2 - size * 2,
         y: qrsize + txtImg.height / 2.5,
+        name: 'txt',
       });
     }
-    // if (showArrow) {
-    //   imgList.push({ src: arrowIcon.toDataURL(), x: 5, y: qrsize + 10 });
-    // }
+    if (showArrow) {
+      imgList.push({
+        src: arrowIcon.toDataURL(),
+        x: 5,
+        y: qrsize + 10,
+        name: 'arrow',
+      });
+    }
     if (showIcon) {
       if (icon === 'qr') {
         imgList.push({
           src: qrIcon.toDataURL(),
           x: qrsize - size,
           y: qrsize + 10,
+          name: 'qrIcon',
         });
       }
       if (icon === 'nfc') {
@@ -129,10 +159,30 @@ function Hello() {
           src: nfcIcon?.toDataURL(),
           x: qrsize - size,
           y: qrsize + 10,
+          name: 'nfcIcon',
+        });
+      }
+      if (icon === 'wifi1') {
+        console.log('wifi1');
+        imgList.push({
+          src: wifiIcon?.toDataURL(),
+          x: qrsize - size,
+          y: qrsize + 10,
+          name: 'wifiIcon',
+        });
+      }
+      if (icon === 'wifi2') {
+        console.log('wifi2 changed!');
+        imgList.push({
+          src: wifi2Icon?.toDataURL(),
+          x: qrsize - size,
+          y: qrsize + 10,
+          name: 'wifi2Icon',
         });
       }
     }
     return imgList;
+    // setMergeList(imgList);
   }, [
     mainCanvas,
     qrCanvas,
@@ -145,6 +195,8 @@ function Hello() {
     icon,
     qrIcon,
     nfcIcon,
+    wifiIcon,
+    wifi2Icon,
   ]);
 
   useEffect(() => {
@@ -202,20 +254,8 @@ function Hello() {
         </select>
       </label>
       <p />
-      <label htmlFor="qrsize" style={{ color: 'black' }}>
-        QR Code Size: &nbsp;
-        <input
-          id="qrsize"
-          type="range"
-          min={100}
-          max={500}
-          step={25}
-          value={qrsize}
-          onChange={(e) => setQrSize(Number(e.target.value))}
-        />
-      </label>
-      <p style={{ color: 'black' }}>size: {qrsize}</p>
-      <p />
+      <span style={{ color: 'black' }}>QR Size: &nbsp;</span>
+      <Slider value={qrsize} minVal={100} maxVal={500} callback={setQrSize} />
       <label htmlFor="backColor" style={{ color: 'black' }}>
         Background Color: &nbsp;
         <select
@@ -256,31 +296,26 @@ function Hello() {
         </select>
       </label>
       <p />
-      <label htmlFor="borderWidth" style={{ color: 'black' }}>
-        Border Width: &nbsp;
-        <input
-          type="range"
-          min={1}
-          max={10}
-          step={1}
-          value={borderWidth}
-          onChange={(e) => setBorderWidth(Number(e.target.value))}
-        />
-      </label>
+      <span style={{ color: 'black' }}>Border Width: &nbsp;</span>
+      <Slider
+        value={borderWidth}
+        minVal={1}
+        maxVal={10}
+        callback={setBorderWidth}
+      />
       <div id="mergedImage">
         <img id="mergeMe" alt="icon" />
       </div>
       <p />
       <div />
       <p />
-      <input
-        type="range"
-        max={100}
+      <span style={{ color: 'black' }}>Add-on Size: &nbsp;</span>
+      <Slider
         value={size}
-        onChange={(e) => setSize(Number(e.target.value))}
+        minVal={10}
+        maxVal={Math.round(qrsize * 0.2)}
+        callback={setSize}
       />
-      <h4 style={{ color: 'black' }}>Add-ons Size: {size}</h4>
-      <p />
       <label htmlFor="checkArrow" style={{ color: 'black' }}>
         <input
           id="checkArrow"
@@ -314,13 +349,14 @@ function Hello() {
           name="whichIcon"
           onChange={(e) => {
             const v = e.target.value;
-            console.log(`whichIcon: ${v}`);
             setIcon(v);
           }}
         >
           <option value="">Choose one ...</option>
           <option value="nfc">NFC</option>
           <option value="qr">QR Code</option>
+          <option value="wifi1">WiFi</option>
+          <option value="wifi2">WiFi2</option>
         </select>
       </label>
       <p />
@@ -331,7 +367,6 @@ function Hello() {
           name="txtColor"
           onChange={(e) => {
             const v = e.target.value;
-            console.log(`txtColor: ${v}`);
             settxtColor(v !== '' ? v : 'black');
           }}
         >
@@ -344,6 +379,7 @@ function Hello() {
           <option value="purple">Purple</option>
         </select>
       </label>
+      <p />
     </div>
   );
 }

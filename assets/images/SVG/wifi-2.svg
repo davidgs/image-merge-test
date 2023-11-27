@@ -1,1 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 75"><defs><style>.cls-1{fill-rule:evenodd;}</style></defs><path d="m16.3,58.19l-3.34-14.56h2.9l2.09,10.02,2.54-10.02h3.35l2.48,10.18,2.13-10.18h2.84l-3.34,14.56h-3.02l-2.8-10.89-2.76,10.89h-3.06Zm16.29-11.98v-2.58h2.69v2.58h-2.69Zm0,11.98v-10.55h2.69v10.55h-2.69Zm4.64-3.88v-2.79h5.26v2.79h-5.26Zm7.34,3.88v-14.56h9.57v2.46h-6.76v3.45h5.86v2.46h-5.86v6.18h-2.81Zm11.89-11.98v-2.58h2.69v2.58h-2.69Zm0,11.98v-10.55h2.69v10.55h-2.69Z"/><path class="cls-1" d="m37.5,0c20.71,0,37.5,16.79,37.5,37.5s-16.79,37.5-37.5,37.5S0,58.21,0,37.5,16.79,0,37.5,0h0Zm0,5.5c17.67,0,32,14.33,32,32s-14.33,32-32,32S5.5,55.17,5.5,37.5,19.83,5.5,37.5,5.5h0Z"/><path class="cls-1" d="m65.25,37.63c-.07-15.27-12.46-27.62-27.75-27.62s-27.68,12.35-27.75,27.62h4.25c.07-12.92,10.56-23.37,23.49-23.37s23.43,10.45,23.49,23.37h4.25Z"/><path class="cls-1" d="m56.74,37.63c-.07-10.57-8.66-19.12-19.24-19.12s-19.17,8.55-19.24,19.12h4.25c.07-8.22,6.75-14.87,14.99-14.87s14.92,6.64,14.99,14.87h4.25Z"/><path class="cls-1" d="m48.24,37.63c-.07-5.87-4.85-10.61-10.74-10.61s-10.67,4.74-10.74,10.61h4.25c.07-3.52,2.95-6.36,6.49-6.36s6.42,2.84,6.49,6.36h4.25Z"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.6.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_extend "http://ns.adobe.com/Extensibility/1.0/">
+	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
+	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
+	<!ENTITY ns_vars "http://ns.adobe.com/Variables/1.0/">
+	<!ENTITY ns_imrep "http://ns.adobe.com/ImageReplacement/1.0/">
+	<!ENTITY ns_sfw "http://ns.adobe.com/SaveForWeb/1.0/">
+	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
+	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
+]>
+<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 75 75"
+	 style="enable-background:new 0 0 75 75;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#E510E5;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#E510E5;}
+</style>
+<metadata>
+	<sfw  xmlns="&ns_sfw;">
+		<slices></slices>
+		<sliceSourceBounds  bottomLeftOrigin="true" height="75" width="75" x="0" y="0"></sliceSourceBounds>
+	</sfw>
+</metadata>
+<path class="st0" d="M16.3,58.2L13,43.6h2.9l2.1,10l2.5-10h3.4l2.5,10.2l2.1-10.2h2.8l-3.3,14.6h-3l-2.8-10.9l-2.8,10.9H16.3
+	L16.3,58.2z M32.6,46.2v-2.6h2.7v2.6H32.6z M32.6,58.2V47.6h2.7v10.5H32.6z M37.2,54.3v-2.8h5.3v2.8C42.5,54.3,37.2,54.3,37.2,54.3z
+	 M44.6,58.2V43.6h9.6v2.5h-6.8v3.5h5.9V52h-5.9v6.2L44.6,58.2L44.6,58.2z M56.5,46.2v-2.6h2.7v2.6H56.5z M56.5,58.2V47.6h2.7v10.5
+	H56.5z"/>
+<path class="st1" d="M37.5,0C58.2,0,75,16.8,75,37.5S58.2,75,37.5,75S0,58.2,0,37.5S16.8,0,37.5,0L37.5,0z M37.5,5.5
+	c17.7,0,32,14.3,32,32s-14.3,32-32,32s-32-14.3-32-32S19.8,5.5,37.5,5.5L37.5,5.5z"/>
+<path class="st1" d="M65.2,37.6C65.2,22.4,52.8,10,37.5,10S9.8,22.4,9.8,37.6H14c0.1-12.9,10.6-23.4,23.5-23.4S60.9,24.7,61,37.6
+	H65.2L65.2,37.6z"/>
+<path class="st1" d="M56.7,37.6c-0.1-10.6-8.7-19.1-19.2-19.1s-19.2,8.6-19.2,19.1h4.2c0.1-8.2,6.8-14.9,15-14.9s14.9,6.6,15,14.9
+	C52.5,37.6,56.7,37.6,56.7,37.6z"/>
+<path class="st1" d="M48.2,37.6C48.2,31.8,43.4,27,37.5,27s-10.7,4.7-10.7,10.6H31c0.1-3.5,2.9-6.4,6.5-6.4s6.4,2.8,6.5,6.4
+	C44,37.6,48.2,37.6,48.2,37.6z"/>
+</svg>
