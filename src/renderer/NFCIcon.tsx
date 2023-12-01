@@ -1,5 +1,5 @@
 import svgToMiniDataURI from 'mini-svg-data-uri';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function NFCIcon(
   fill: string,
@@ -10,7 +10,7 @@ export default function NFCIcon(
   const [svgEle, setSvgEle] = useState('');
 
   useEffect(() => {
-  // const svg: string = useMemo(() => {
+    // const svg: string = useMemo(() => {
     setSvgEle(`<svg
       id="nfc-svg-icon"
       xmlns="http://www.w3.org/2000/svg"

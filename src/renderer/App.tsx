@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import { RGBColor } from 'react-color';
 import mergeImages from 'merge-images';
 import thrive from '../../assets/images/ThriveCode.png';
 import Arrow from './Arrow';
@@ -10,16 +11,39 @@ import Slider from './Slider';
 import WiFiIcon from './WiFiIcon';
 import WiFiIcon2 from './WiFiIcon2';
 import TxtAsImage from './TxtAsImage';
+import ColorPicker from './ColorPicker';
+import Email1 from './Email1';
 
 function Hello() {
   const [size, setSize] = React.useState<number>(30);
   const [qrsize, setQrSize] = React.useState<number>(200);
   const [showArrow, setShowArrow] = React.useState<boolean>(true);
   const [showIcon, setShowIcon] = React.useState<boolean>(true);
-  const [backColor, setBackColor] = React.useState<string>('white');
+  const [backColor, setBackColor] = React.useState<RGBColor>({
+    a: 1,
+    b: 255,
+    g: 255,
+    r: 255,
+  } as RGBColor);
   // const [mergeIm, setMergeIm] = React.useState<string>('');
-  const [txtColor, settxtColor] = React.useState<string>('black');
-  const [borderColor, setBorderColor] = React.useState<string>('black');
+  const [txtColor, settxtColor] = React.useState<RGBColor>({
+    a: 1,
+    b: 0,
+    g: 0,
+    r: 0,
+  } as RGBColor);
+  const [borderColor, setBorderColor] = React.useState<RGBColor>({
+    a: 1,
+    b: 0,
+    g: 0,
+    r: 0,
+  } as RGBColor);
+  // const [shadowColor, setShadowColor] = React.useState<RGBColor>({
+  //   a: 1,
+  //   b: 0,
+  //   g: 0,
+  //   r: 0,
+  // } as RGBColor);
   const [borderWidth, setBorderWidth] = React.useState<number>(1);
   const [fonts, setFonts] = React.useState<string[]>();
   const [activeFont, setActiveFont] = React.useState<string>('Arial');
@@ -42,6 +66,9 @@ function Hello() {
       });
   }, []);
 
+  const updateColor = (myColor: RGBColor) => {
+    setBackColor(myColor);
+  };
   /*
    * keep font menu options up to date
    */
@@ -51,11 +78,25 @@ function Hello() {
     );
   }, [fonts]);
 
-  const nfcIcon: HTMLCanvasElement = NFCIcon(backColor, txtColor, size);
-  const qrIcon: HTMLCanvasElement = QRIcon(txtColor, size);
-  const arrowIcon: HTMLCanvasElement = Arrow(txtColor, size);
-  const wifiIcon: HTMLCanvasElement = WiFiIcon(txtColor, size);
-  const wifi2Icon: HTMLCanvasElement = WiFiIcon2(txtColor, size);
+  const convertRGBToHex = (rgb: RGBColor): string => {
+    const hex = `#${rgb.r.toString(16)}${rgb.g.toString(16)}${rgb.b.toString(
+      16,
+    )}`;
+    return hex;
+  };
+  const nfcIcon: HTMLCanvasElement = NFCIcon(
+    convertRGBToHex(backColor),
+    convertRGBToHex(txtColor),
+    size,
+  );
+  const email1Icon: HTMLCanvasElement = Email1(convertRGBToHex(txtColor), size);
+  const qrIcon: HTMLCanvasElement = QRIcon(convertRGBToHex(txtColor), size);
+  const arrowIcon: HTMLCanvasElement = Arrow(convertRGBToHex(txtColor), size);
+  const wifiIcon: HTMLCanvasElement = WiFiIcon(convertRGBToHex(txtColor), size);
+  const wifi2Icon: HTMLCanvasElement = WiFiIcon2(
+    convertRGBToHex(txtColor),
+    size,
+  );
 
   /*
    * Canvas for the display text, converted to an image
@@ -68,8 +109,8 @@ function Hello() {
    * @returns base64 string of canvas
    */
   const txtImg: HTMLCanvasElement = TxtAsImage(
-    backColor,
-    txtColor,
+    convertRGBToHex(backColor),
+    convertRGBToHex(txtColor),
     size,
     qrsize,
     activeFont,
@@ -87,11 +128,11 @@ function Hello() {
     canvas.width = qrsize + 20;
     const context = canvas.getContext('2d');
     if (context) {
-      context.fillStyle = backColor;
+      context.fillStyle = convertRGBToHex(backColor);
       context.fillRect(0, 0, qrsize + 20, canvas.height);
       context.globalCompositeOperation = 'source-over';
       context.lineWidth = borderWidth;
-      context.strokeStyle = borderColor;
+      context.strokeStyle = convertRGBToHex(borderColor);
       context.strokeRect(2, 2, canvas.width - 3, canvas.height - 3);
     }
     return canvas;
@@ -121,7 +162,6 @@ function Hello() {
   //   [],
   // );
   const mergeList: mergeImages.ImageSource[] = useMemo(() => {
-  // useEffect(() => {
     const imgList = [];
     if (mainCanvas) {
       imgList.push({ src: mainCanvas.toDataURL(), x: 0, y: 0, name: 'main' });
@@ -146,6 +186,14 @@ function Hello() {
       });
     }
     if (showIcon) {
+      if (icon === 'email1') {
+        imgList.push({
+          src: email1Icon.toDataURL(),
+          x: qrsize - size,
+          y: qrsize + 10,
+          name: 'email1',
+        });
+      }
       if (icon === 'qr') {
         imgList.push({
           src: qrIcon.toDataURL(),
@@ -163,7 +211,6 @@ function Hello() {
         });
       }
       if (icon === 'wifi1') {
-        console.log('wifi1');
         imgList.push({
           src: wifiIcon?.toDataURL(),
           x: qrsize - size,
@@ -172,7 +219,6 @@ function Hello() {
         });
       }
       if (icon === 'wifi2') {
-        console.log('wifi2 changed!');
         imgList.push({
           src: wifi2Icon?.toDataURL(),
           x: qrsize - size,
@@ -192,6 +238,7 @@ function Hello() {
     size,
     qrsize,
     arrowIcon,
+    email1Icon,
     icon,
     qrIcon,
     nfcIcon,
@@ -230,7 +277,10 @@ function Hello() {
         <input
           type="text"
           id="mergeText"
-          style={{ fontFamily: activeFont, color: txtColor }}
+          style={{
+            fontFamily: activeFont,
+            color: `rgba(${txtColor.r}, ${txtColor.g}, ${txtColor.b}, ${txtColor.a})`,
+          }}
           onChange={(e) => {
             const v = e.target.value;
             setMergeText(v);
@@ -258,7 +308,8 @@ function Hello() {
       <Slider value={qrsize} minVal={100} maxVal={500} callback={setQrSize} />
       <label htmlFor="backColor" style={{ color: 'black' }}>
         Background Color: &nbsp;
-        <select
+        <ColorPicker color={backColor} callback={updateColor} />
+        {/* <select
           id="backColor"
           name="backgroundColor"
           onChange={(e) => {
@@ -273,12 +324,13 @@ function Hello() {
           <option value="black">Black</option>
           <option value="white">White</option>
           <option value="purple">Purple</option>
-        </select>
+        </select> */}
       </label>
       <p />
       <label htmlFor="borderColor" style={{ color: 'black' }}>
         Border Color: &nbsp;
-        <select
+        <ColorPicker color={borderColor} callback={setBorderColor} />
+        {/* <select
           id="borderColor"
           name="BorderColor"
           onChange={(e) => {
@@ -293,7 +345,7 @@ function Hello() {
           <option value="black">Black</option>
           <option value="white">White</option>
           <option value="purple">Purple</option>
-        </select>
+        </select> */}
       </label>
       <p />
       <span style={{ color: 'black' }}>Border Width: &nbsp;</span>
@@ -353,6 +405,7 @@ function Hello() {
           }}
         >
           <option value="">Choose one ...</option>
+          <option value="email1">Email</option>
           <option value="nfc">NFC</option>
           <option value="qr">QR Code</option>
           <option value="wifi1">WiFi</option>
@@ -362,7 +415,8 @@ function Hello() {
       <p />
       <label htmlFor="txtColor" style={{ color: 'black' }}>
         Add-on Color: &nbsp;
-        <select
+        <ColorPicker color={txtColor} callback={settxtColor} />
+        {/* <select
           id="txtColor"
           name="txtColor"
           onChange={(e) => {
@@ -377,7 +431,7 @@ function Hello() {
           <option value="black">Black</option>
           <option value="white">White</option>
           <option value="purple">Purple</option>
-        </select>
+        </select> */}
       </label>
       <p />
     </div>

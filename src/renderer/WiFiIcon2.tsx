@@ -1,5 +1,4 @@
 import svgToMiniDataURI from 'mini-svg-data-uri';
-import { useState } from 'react';
 
 export default function WifiIcon2(
   stroke: string,
@@ -16,20 +15,17 @@ export default function WifiIcon2(
   <path d="m5.24.02C33.27.02,56,22.74,56,50.77c.19,5.54-7.63,6.49-7.94,0C48.05,27.13,28.89,7.96,5.24,7.96-2.23,7.68-1.25-.42,5.24.02h0Z" fill="${stroke}" fillRule="evenodd"/></svg>
   `;
 
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(document.createElement('canvas'));
   /*
    * Keep the arrow canvas up to date
    */
-  setCanvas(...canvas)
+  const canvas = document.createElement('canvas');
   canvas.height = size + 15;
   canvas.width = size;
-  const context = canvas.getContext('2d');
+  const context = canvas?.getContext('2d');
   if (context) {
     const im = new Image();
     im.src = svgToMiniDataURI(wifi2);
     context.drawImage(im, 0, 10, size, size);
-    const idata = context.getImageData(0, 10, size, size);
-    canvas.    const data = idata.data;
   }
   return canvas;
 }

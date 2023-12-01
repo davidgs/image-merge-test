@@ -1,4 +1,4 @@
-import svgToMiniDataURI from 'mini-svg-data-uri';
+import thrive from '../assets/thrive.png';
 
 export default function QRCodeImage(size: number): HTMLCanvasElement {
   /*
