@@ -127,7 +127,7 @@
     "@testing-library/react": "^14.0.0",
     "@types/jest": "^29.5.5",
     "@types/merge-images": "^1.2.3",
-    "@types/node": "20.6.2",
+    "@types/node": "20.7.0",
     "@types/opentype": "^0.0.4",
     "@types/potrace": "^2.1.4",
     "@types/react": "^18.2.21",

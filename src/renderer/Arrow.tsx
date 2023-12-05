@@ -1,10 +1,16 @@
 import svgToMiniDataURI from 'mini-svg-data-uri';
+import { useState, useEffect } from 'react';
 
-export default function Arrow(color: string, size: number): HTMLCanvasElement {
-  /*
-   * build the svg for the arrow icon
-   */
-  const arrowSVG: string = `
+export default function Arrow(color: string, size: number): string {
+  const [imgString, setImgString] = useState('');
+
+  useEffect(() => {
+    const creatImg = async () => {
+      try {
+        /*
+         * build the svg for the arrow icon
+         */
+        const arrowSVG: string = `
     <svg
       id="arrowIcon"
       xmlns="http://www.w3.org/2000/svg"
@@ -98,17 +104,28 @@ export default function Arrow(color: string, size: number): HTMLCanvasElement {
       </g>
     </svg>`;
 
-  /*
-   * Keep the arrow canvas up to date
-   */
-  const canvas = document.createElement('canvas');
-  canvas.height = size + 15;
-  canvas.width = size;
-  const context = canvas.getContext('2d');
-  if (context) {
-    const im = new Image();
-    im.src = svgToMiniDataURI(arrowSVG);
-    context.drawImage(im, 0, 10, size, size);
-  }
-  return canvas;
+        /*
+         * Keep the arrow canvas up to date
+         */
+        const canvas = document.createElement('canvas');
+        canvas.height = size + 15;
+        canvas.width = size;
+        const context = canvas.getContext('2d');
+        if (context) {
+          const im = new Image();
+          im.src = svgToMiniDataURI(arrowSVG);
+          im.onload = () => {
+            console.log('arrow updated', size);
+            context.drawImage(im, 0, 10, size, size);
+            setImgString(canvas.toDataURL());
+          };
+        }
+      } catch (e) {
+        console.log('wifi error', e);
+      }
+    };
+    creatImg();
+  }, [size, color]);
+
+  return imgString;
 }

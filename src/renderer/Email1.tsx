@@ -1,10 +1,13 @@
 import svgToMiniDataURI from 'mini-svg-data-uri';
+import { useEffect, useState } from 'react';
 
-export default function Email1(
-  stroke: string,
-  size: number,
-): HTMLCanvasElement {
-  const email1 = `
+export default function Email1(stroke: string, size: number): string {
+  const [imgString, setImgString] = useState('');
+
+  useEffect(() => {
+    const creatImg = async () => {
+      try {
+        const email1 = `
   <svg
       id="email1-svg-icon"
       xmlns="http://www.w3.org/2000/svg"
@@ -18,17 +21,28 @@ export default function Email1(
   <path d="m25.5,18.15H1.5c-.83,0-1.5.67-1.5,1.5s.67,1.5,1.5,1.5h24c.83,0,1.5-.67,1.5-1.5s-.67-1.5-1.5-1.5Z" fill="${stroke}"  fillRule="evenodd"/>
   </svg>`;
 
-  /*
-   * Keep the arrow canvas up to date
-   */
-  const canvas = document.createElement('canvas');
-  canvas.height = size + 15;
-  canvas.width = size + 20;
-  const context = canvas.getContext('2d');
-  if (context) {
-    const im = new Image();
-    im.src = svgToMiniDataURI(email1);
-    context.drawImage(im, 0, 10, size, size);
-  }
-  return canvas;
+        /*
+         * Keep the arrow canvas up to date
+         */
+        const canvas = document.createElement('canvas');
+        canvas.height = size + 15;
+        canvas.width = size + 20;
+        const context = canvas.getContext('2d');
+        if (context) {
+          const im = new Image();
+          im.src = svgToMiniDataURI(email1);
+          im.onload = () => {
+            console.log('email updated', size);
+            context.drawImage(im, 0, 10, size, size);
+            setImgString(canvas.toDataURL());
+          };
+        }
+      } catch (e) {
+        console.log('wifi error', e);
+      }
+    };
+    creatImg();
+  }, [size, stroke]);
+
+  return imgString;
 }

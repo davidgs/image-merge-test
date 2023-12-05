@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { RGBColor } from 'react-color';
 import mergeImages from 'merge-images';
-import thrive from '../../assets/images/ThriveCode.png';
 import Arrow from './Arrow';
 import './App.css';
 import QRIcon from './QrIcon';
@@ -13,6 +12,7 @@ import WiFiIcon2 from './WiFiIcon2';
 import TxtAsImage from './TxtAsImage';
 import ColorPicker from './ColorPicker';
 import Email1 from './Email1';
+import QRCodeImage from './QRCodeInmage';
 
 function Hello() {
   const [size, setSize] = React.useState<number>(30);
@@ -84,19 +84,34 @@ function Hello() {
     )}`;
     return hex;
   };
-  const nfcIcon: HTMLCanvasElement = NFCIcon(
+  const nfcIcon: string = NFCIcon(
     convertRGBToHex(backColor),
     convertRGBToHex(txtColor),
     size,
   );
-  const email1Icon: HTMLCanvasElement = Email1(convertRGBToHex(txtColor), size);
-  const qrIcon: HTMLCanvasElement = QRIcon(convertRGBToHex(txtColor), size);
-  const arrowIcon: HTMLCanvasElement = Arrow(convertRGBToHex(txtColor), size);
-  const wifiIcon: HTMLCanvasElement = WiFiIcon(convertRGBToHex(txtColor), size);
-  const wifi2Icon: HTMLCanvasElement = WiFiIcon2(
-    convertRGBToHex(txtColor),
-    size,
-  );
+  const email1Icon: string = Email1(convertRGBToHex(txtColor), size);
+  const qrIcon: string = QRIcon(convertRGBToHex(txtColor), size);
+  const arrowIcon: string = Arrow(convertRGBToHex(txtColor), size);
+  const wifiIcon: string = WiFiIcon(convertRGBToHex(txtColor), size);
+  const qrImage: string = QRCodeImage(qrsize);
+
+  // const icon = useMemo(() => {
+  //   if (icon === 'email1') {
+  //     return email1Icon;
+  //   }
+  //   if (icon === 'qr') {
+  //     return qrIcon;
+  //   }
+  //   if (icon === 'nfc') {
+  //     return nfcIcon;
+  //   }
+  //   if (icon === 'wifi1') {
+  //     return wifiIcon;
+  //   }
+  //   return '';
+  // }, [email1Icon, icon, nfcIcon, qrIcon, wifiIcon]);
+
+  const wifi2Icon: string = WiFiIcon2(convertRGBToHex(txtColor), size);
 
   /*
    * Canvas for the display text, converted to an image
@@ -108,7 +123,7 @@ function Hello() {
    * @param mergeText text to be merged
    * @returns base64 string of canvas
    */
-  const txtImg: HTMLCanvasElement = TxtAsImage(
+  const txtImg: string = TxtAsImage(
     convertRGBToHex(backColor),
     convertRGBToHex(txtColor),
     size,
@@ -142,18 +157,18 @@ function Hello() {
    * Keep the QR canvas up to date
    * @returns HTMLCanvasElement with the QR Code in it
    */
-  const qrCanvas: HTMLCanvasElement = useMemo(() => {
-    const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.height = qrsize;
-    canvas.width = qrsize;
-    const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
-    if (context) {
-      const im: HTMLImageElement = new Image();
-      im.src = thrive;
-      context.drawImage(im, 2, 2, qrsize, qrsize);
-    }
-    return canvas;
-  }, [qrsize]);
+  // const qrCanvas: HTMLCanvasElement = useMemo(() => {
+  //   const canvas: HTMLCanvasElement = document.createElement('canvas');
+  //   canvas.height = qrsize;
+  //   canvas.width = qrsize;
+  //   const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
+  //   if (context) {
+  //     const im: HTMLImageElement = new Image();
+  //     im.src = thrive;
+  //     context.drawImage(im, 2, 2, qrsize, qrsize);
+  //   }
+  //   return canvas;
+  // }, [qrsize]);
 
   /*
    * Keep the merged canvas up to date
@@ -164,74 +179,84 @@ function Hello() {
   const mergeList: mergeImages.ImageSource[] = useMemo(() => {
     const imgList = [];
     if (mainCanvas) {
-      imgList.push({ src: mainCanvas.toDataURL(), x: 0, y: 0, name: 'main' });
+      imgList.push({
+        src: mainCanvas.toDataURL(),
+        x: 0,
+        y: 0,
+        name: 'main',
+      } as mergeImages.ImageSource);
     }
-    if (qrCanvas) {
-      imgList.push({ src: qrCanvas.toDataURL(), x: 10, y: 10, name: 'qr' });
+    if (qrImage) {
+      imgList.push({
+        src: qrImage,
+        x: 10,
+        y: 10,
+        name: 'qr',
+      } as mergeImages.ImageSource);
     }
     if (txtImg) {
       imgList.push({
-        src: txtImg.toDataURL(),
+        src: txtImg,
         x: mainCanvas.width / 2 - size * 2,
-        y: qrsize + txtImg.height / 2.5,
+        y: qrsize + size / 2.5,
         name: 'txt',
-      });
+      } as mergeImages.ImageSource);
     }
     if (showArrow) {
       imgList.push({
-        src: arrowIcon.toDataURL(),
+        src: arrowIcon,
         x: 5,
         y: qrsize + 10,
         name: 'arrow',
-      });
+      } as mergeImages.ImageSource);
     }
     if (showIcon) {
       if (icon === 'email1') {
         imgList.push({
-          src: email1Icon.toDataURL(),
+          src: email1Icon,
           x: qrsize - size,
           y: qrsize + 10,
           name: 'email1',
-        });
+        } as mergeImages.ImageSource);
       }
       if (icon === 'qr') {
         imgList.push({
-          src: qrIcon.toDataURL(),
+          src: qrIcon,
           x: qrsize - size,
           y: qrsize + 10,
           name: 'qrIcon',
-        });
+        } as mergeImages.ImageSource);
       }
       if (icon === 'nfc') {
         imgList.push({
-          src: nfcIcon?.toDataURL(),
+          src: nfcIcon,
           x: qrsize - size,
           y: qrsize + 10,
           name: 'nfcIcon',
-        });
+        } as mergeImages.ImageSource);
       }
       if (icon === 'wifi1') {
         imgList.push({
-          src: wifiIcon?.toDataURL(),
+          src: wifiIcon,
           x: qrsize - size,
           y: qrsize + 10,
           name: 'wifiIcon',
-        });
+        } as mergeImages.ImageSource);
       }
       if (icon === 'wifi2') {
         imgList.push({
-          src: wifi2Icon?.toDataURL(),
+          src: wifi2Icon,
           x: qrsize - size,
           y: qrsize + 10,
           name: 'wifi2Icon',
-        });
+        } as mergeImages.ImageSource);
       }
     }
     return imgList;
     // setMergeList(imgList);
   }, [
     mainCanvas,
-    qrCanvas,
+    qrImage,
     txtImg,
     showArrow,
     showIcon,

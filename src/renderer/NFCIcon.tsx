@@ -5,13 +5,13 @@ export default function NFCIcon(
   fill: string,
   stroke: string,
   size: number,
-): HTMLCanvasElement {
-  // const ref = useRef();
-  const [svgEle, setSvgEle] = useState('');
+): string {
+  const [imgString, setImgString] = useState('');
 
   useEffect(() => {
-    // const svg: string = useMemo(() => {
-    setSvgEle(`<svg
+    const creatImg = async () => {
+      try {
+        const nfcIsonSVG = `<svg
       id="nfc-svg-icon"
       xmlns="http://www.w3.org/2000/svg"
       width="180"
@@ -55,20 +55,27 @@ export default function NFCIcon(
         ry=".3"
         transform="translate(-3.58 15.44) rotate(-49.71)"
       />
-    </svg>`);
-  }, [fill, stroke]);
-
-  /*
-   * Keep the icon canvas up to date
-   */
-  const canvas: HTMLCanvasElement = document.createElement('canvas');
-  const context: CanvasRenderingContext2D | null = canvas.getContext('2d');
-  if (context) {
-    const im: HTMLImageElement = new Image();
-    canvas.height = size + 15;
-    canvas.width = size + 4;
-    im.src = svgToMiniDataURI(svgEle);
-    context.drawImage(im, 0, 10, size, size);
-  }
-  return canvas;
+    </svg>`;
+        /*
+         * Keep the icon canvas up to date
+         */
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        const context: CanvasRenderingContext2D | null =
+          canvas.getContext('2d');
+        if (context) {
+          const im = new Image();
+          im.src = svgToMiniDataURI(nfcIsonSVG);
+          im.onload = () => {
+            console.log('nfcIcon updated', size);
+            context.drawImage(im, 0, 10, size, size);
+            setImgString(canvas.toDataURL());
+          };
+        }
+      } catch (e) {
+        console.log('wifi error', e);
+      }
+    };
+    creatImg();
+  }, [size, fill, stroke]);
+  return imgString;
 }
