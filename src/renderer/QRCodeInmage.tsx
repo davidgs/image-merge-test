@@ -19,8 +19,8 @@ export default function QRCodeImage(size: number): string {
           const im = new Image();
           im.src = thrive;
           im.onload = () => {
-            console.log('wifi updated', size);
-            context.drawImage(im, 0, 10, size, size);
+            console.log('QR Image updated', size);
+            context.drawImage(im, 2, 2, size, size);
             setImgString(canvas.toDataURL());
           };
         }
